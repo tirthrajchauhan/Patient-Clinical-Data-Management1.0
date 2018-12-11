@@ -322,7 +322,7 @@ module.exports = "p{\n    font-family: Verdana, Geneva, Tahoma, sans-serif;\n   
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  Add Record!\n</p>\n<div class=\"card\">\n  <div class=\"card-body\">\n      <form [formGroup]=\"angForm\" novalidate>\n          <div class=\"form-group\">\n        <label class=\"col-md-4\">Blood Pressure</label>\n        <input type=\"text\" class=\"form-control\" name=\"blood_pressure\" formControlName=\"blood_pressure\" #first_name/>\n      </div>\n      <div *ngIf=\"angForm.controls['blood_pressure'].invalid && (angForm.controls['blood_pressure'].dirty || angForm.controls['blood_pressure'].touched)\" class=\"alert alert-danger\">\n        <div *ngIf=\"angForm.controls['blood_pressure'].errors.required\">\n          Please insert blood pressure.\n        </div>\n      </div>\n      <div class=\"form-group\">\n        <label class=\"col-md-4\">Respiratory Rate</label>\n        <input type=\"text\" class=\"form-control\" name=\"respi_rate\" formControlName=\"respi_rate\" #last_name/>\n      </div>\n      <div *ngIf=\"angForm.controls['respi_rate'].invalid && (angForm.controls['respi_rate'].dirty || angForm.controls['respi_rate'].touched)\" class=\"alert alert-danger\">\n          <div *ngIf=\"angForm.controls['respi_rate'].errors.required\">\n          Please insert respiratory rate.\n          </div>\n        </div>\n      <div class=\"form-group\">\n        <label class=\"col-md-4\">Blood Oxygen Level</label>\n        <input type=\"text\" class=\"form-control\" name=\"bo_level\" formControlName=\"bo_level\" #dob/>\n      </div>\n      <div *ngIf=\"angForm.controls['bo_level'].invalid && (angForm.controls['bo_level'].dirty || angForm.controls['bo_level'].touched)\" class=\"alert alert-danger\">\n          <div *ngIf=\"angForm.controls['bo_level'].errors.required\">\n            Please insert blood oxygen level.\n          </div>\n        </div>\n      <div class=\"form-group\">\n        <label class=\"col-md-4\">Heart-Beat Rate</label>\n        <input type=\"text\" class=\"form-control\" name=\"hb_rate\" formControlName=\"hb_rate\" #address/>\n      </div>\n      <div *ngIf=\"angForm.controls['hb_rate'].invalid && (angForm.controls['hb_rate'].dirty || angForm.controls['hb_rate'].touched)\" class=\"alert alert-danger\">\n          <div *ngIf=\"angForm.controls['hb_rate'].errors.required\">\n            Please insert heart-beat rate.\n          </div>\n        </div>\n        <div class=\"form-group\">\n            <button (click)=\"angForm.invalid\" class=\"btn btn-primary\">Add Patient</button>\n          </div>\n    </form>\n  </div>\n</div>"
+module.exports = "<p>\n  Add Record!\n</p>\n<div class=\"card\">\n  <div class=\"card-body\">\n      <form [formGroup]=\"angForm\" novalidate>\n          <div class=\"form-group\">\n        <label class=\"col-md-4\">Blood Pressure</label>\n        <input type=\"text\" class=\"form-control\" name=\"blood_pressure\" formControlName=\"blood_pressure\" [(ngModel)]=\"blood_pressure\"/>\n      </div>\n      \n      <div class=\"form-group\">\n        <label class=\"col-md-4\">Respiratory Rate</label>\n        <input type=\"text\" class=\"form-control\" name=\"respiratory_rate\" formControlName=\"respiratory_rate\" [(ngModel)]=\"respiratory_rate\"/>\n      </div>\n     \n      <div class=\"form-group\">\n        <label class=\"col-md-4\">Blood Oxygen Level</label>\n        <input type=\"text\" class=\"form-control\" name=\"blood_oxygen\" formControlName=\"blood_oxygen\" [(ngModel)]=\"blood_oxygen\"/>\n      </div>\n      \n      <div class=\"form-group\">\n        <label class=\"col-md-4\">Heart-Beat Rate</label>\n        <input type=\"text\" class=\"form-control\" name=\"heart_rate\" formControlName=\"heart_rate\" [(ngModel)]=\"heart_rate\"/>\n      </div>\n     \n        <div class=\"form-group\">\n            <button type=\"submit\" (click)=\"onRecordSubmit()\" [disabled]=\"angForm.invalid\" class=\"btn btn-primary\">Add Record</button>\n          </div>\n    </form>\n  </div>\n</div>"
 
 /***/ }),
 
@@ -338,12 +338,54 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AddrecordComponent", function() { return AddrecordComponent; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
+/* harmony import */ var _record_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../record.service */ "./src/app/record.service.ts");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+
+
+
 
 
 var AddrecordComponent = /** @class */ (function () {
-    function AddrecordComponent() {
+    function AddrecordComponent(route, recordService, fb, router) {
+        this.route = route;
+        this.recordService = recordService;
+        this.fb = fb;
+        this.router = router;
+        this.patient = {};
+        this.createForm();
     }
+    AddrecordComponent.prototype.createForm = function () {
+        this.angForm = this.fb.group({
+            blood_pressure: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
+            respiratory_rate: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
+            blood_oxygen: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required],
+            heart_rate: ['', _angular_forms__WEBPACK_IMPORTED_MODULE_2__["Validators"].required]
+        });
+    };
+    AddrecordComponent.prototype.onRecordSubmit = function () {
+        var _this = this;
+        var newRecord = {
+            patient_id: this.id,
+            blood_pressure: this.blood_pressure,
+            respiratory_rate: this.respiratory_rate,
+            blood_oxygen: this.blood_oxygen,
+            heart_rate: this.heart_rate
+        };
+        this.recordService.addRecord(this.id, newRecord).subscribe(function (record) {
+            _this.records = record;
+            _this.router.navigate(['/getrecord']);
+        });
+    };
+    //   addRecord(blood_pressure, respiratory_rate, blood_oxygen, heartbeat_rate) {
+    //     this.route.params.subscribe(params => {
+    //     this.recordService.addRecord(blood_pressure, respiratory_rate, blood_oxygen,heartbeat_rate, params['id']);
+    //     //this.router.navigate(['/getrecord']);
+    //     //window.location.reload();
+    //     });
+    // }
     AddrecordComponent.prototype.ngOnInit = function () {
+        this.id = JSON.parse(localStorage.getItem("id"));
     };
     AddrecordComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -351,7 +393,7 @@ var AddrecordComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./addrecord.component.html */ "./src/app/components/addrecord/addrecord.component.html"),
             styles: [__webpack_require__(/*! ./addrecord.component.css */ "./src/app/components/addrecord/addrecord.component.css")]
         }),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_router__WEBPACK_IMPORTED_MODULE_4__["ActivatedRoute"], _record_service__WEBPACK_IMPORTED_MODULE_3__["RecordService"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormBuilder"], _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"]])
     ], AddrecordComponent);
     return AddrecordComponent;
 }());
@@ -606,7 +648,7 @@ module.exports = ".buttons{ \n    text-align: center;\n}\np{\n    font-family: V
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  Patient Record\n</p>\n\n<table class=\"table table-hover\">\n  <thead>\n  <tr>\n      <td>Blood Pressure</td>\n      <td>Respiratory Rate</td>\n      <td>Blood Oxygen Level</td>\n      <td>Heart Beat Rate</td>\n  </tr>\n  </thead>\n\n  <tbody id=\"body_color\">\n      <tr>\n          <td>Demo</td>\n          <td>Demo</td>\n          <td>Demo</td>\n          <td>Demo</td>\n      </tr>\n  </tbody>\n</table>\n\n<table class=\"table table-hover\">\n<tr class=\"buttons\">\n    <td><a [routerLink]=\"['/editrecord']\" class=\"btn btn-primary\" id=\"buttons\">Edit</a></td>\n    <td><button class=\"btn btn-danger\" id=\"buttons\">Delete</button></td>\n    </tr>\n</table>"
+module.exports = "<p>\n  Patient Record\n</p>\n\n<table class=\"table table-hover\">\n  <thead>\n  <tr>\n      <td>Blood Pressure</td>\n      <td>Respiratory Rate</td>\n      <td>Blood Oxygen Level</td>\n      <td>Heart Rate</td>\n  </tr>\n  </thead>\n\n  <tbody id=\"body_color\">\n    <tr *ngFor=\"let record of records\">\n        <td class=\"CellWithComment\">{{ record.blood_pressure }}</td>\n        <td class=\"hide\">{{ record.respiratory_rate }}</td>\n        <td class=\"hide\">{{ record.blood_oxygen }}</td>\n        <td class=\"hide\">{{ record.heart_rate }}</td>\n        <td><button (click)=\"deleteRecord(record._id)\"  class=\"btn btn-danger\">Delete</button></td>\n    </tr>\n  </tbody>\n</table>\n\n<table class=\"table table-hover\">\n<tr class=\"buttons\">\n    <td><a (click)=\"redirect()\" class=\"btn btn-primary\" id=\"buttons\">Add</a></td>\n </tr>\n</table>"
 
 /***/ }),
 
@@ -622,12 +664,61 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "GetrecordComponent", function() { return GetrecordComponent; });
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _record_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../record.service */ "./src/app/record.service.ts");
+/* harmony import */ var _patient_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../patient.service */ "./src/app/patient.service.ts");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/fesm5/router.js");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/forms */ "./node_modules/@angular/forms/fesm5/forms.js");
+
+
+
+
 
 
 var GetrecordComponent = /** @class */ (function () {
-    function GetrecordComponent() {
+    function GetrecordComponent(patientService, recordService, router, fb) {
+        this.patientService = patientService;
+        this.recordService = recordService;
+        this.router = router;
+        this.fb = fb;
     }
+    GetrecordComponent.prototype.redirect = function () {
+        this.router.navigate(['/addrecord']);
+    };
     GetrecordComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.patientService.apiData$.subscribe(function (patient) {
+            //console.log(patient.id);
+            if (patient) {
+                _this.patient = patient;
+                _this.recordService.saveID(patient._id);
+                console.log(patient._id);
+            }
+        });
+        this.id = JSON.parse(localStorage.getItem("id"));
+        //console.log(this.patient.id);
+        this.recordService
+            .getRecords(this.id)
+            .subscribe(function (records) {
+            _this.records = records;
+        });
+    };
+    // deleteRecord(ID) {
+    //   this.recordService.deleteRecord(ID).subscribe(res => {
+    //     console.log('Deleted');
+    //   });
+    //   window.location.reload();
+    // }
+    GetrecordComponent.prototype.deleteRecord = function (ID) {
+        var records = this.records;
+        this.recordService.deleteRecord(ID).subscribe(function (data) {
+            if (data.n == 1) {
+                for (var i = 0; i < records.length; i++) {
+                    if (records[i]._id == ID) {
+                        records.splice(i, 1);
+                    }
+                }
+            }
+        });
     };
     GetrecordComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -635,7 +726,7 @@ var GetrecordComponent = /** @class */ (function () {
             template: __webpack_require__(/*! ./getrecord.component.html */ "./src/app/components/getrecord/getrecord.component.html"),
             styles: [__webpack_require__(/*! ./getrecord.component.css */ "./src/app/components/getrecord/getrecord.component.css")]
         }),
-        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [])
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_patient_service__WEBPACK_IMPORTED_MODULE_3__["PatientService"], _record_service__WEBPACK_IMPORTED_MODULE_2__["RecordService"], _angular_router__WEBPACK_IMPORTED_MODULE_4__["Router"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["FormBuilder"]])
     ], GetrecordComponent);
     return GetrecordComponent;
 }());
@@ -662,7 +753,7 @@ module.exports = ".nav-link{\n    color: black;\n  }\n\n.buttons{ \n    display:
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"loginBox\">\n        Welcome,  {{id}}\n        <a href=\"javascript:void(0);\" (click)=\"logout()\">Logout</a>\n    </div>\n<p>\n    Patient Details\n</p>\n<div class=\"card\">\n        <div class=\"card-body\">\n            <form [formGroup]=\"addPatient\" novalidate>\n                <table class=\"table table-hover\">\n                            <thead>\n                                    <tr>\n                                        <td>First Name</td>\n                                        <td class=\"hide\">Last Name</td>\n                                        <td class=\"hide\">DOB</td>\n                                        <td class=\"hide\">Address</td>\n                                        <td colspan=\"2\">Actions</td>\n                                    </tr>\n                            </thead>\n                            <tbody id=\"body_color\">\n                                    <tr *ngFor=\"let patient of patients\">\n                                        <td class=\"CellWithComment\"><a [routerLink]=\"['/getrecord']\" class=\"nav-link\">{{ patient.first_name }}<span class=\"CellComment\">Click to fetch records!</span></a>\n                                        </td>\n                                        <td class=\"hide\">{{ patient.last_name }}</td>\n                                        <td class=\"hide\">{{ patient.dob }}</td>\n                                        <td class=\"hide\">{{ patient.address }}</td>\n                                        <td class=\"buttons\"><a [routerLink]=\"['/edit', patient._id]\" class=\"btn btn-primary\">Edit</a>\n                                        <button (click)=\"deletePatient(patient._id)\"  class=\"btn btn-danger\">Delete</button></td>\n                                    </tr>\n                            </tbody>\n                </table> \n          </form>\n        </div>\n      </div>"
+module.exports = "<div class=\"loginBox\">\n        Welcome,  {{id}}\n        <a href=\"javascript:void(0);\" (click)=\"logout()\">Logout</a>\n    </div>\n<p>\n    Patient Details\n</p>\n<div class=\"card\">\n        <div class=\"card-body\">\n            <form [formGroup]=\"addPatient\" novalidate>\n                <table class=\"table table-hover\">\n                            <thead>\n                                    <tr>\n                                        <td>First Name</td>\n                                        <td class=\"hide\">Last Name</td>\n                                        <td class=\"hide\">DOB</td>\n                                        <td class=\"hide\">Address</td>\n                                        <td colspan=\"2\">Actions</td>\n                                    </tr>\n                            </thead>\n                            <tbody id=\"body_color\">\n                                    <tr *ngFor=\"let patient of patients\">\n                                        <!-- <td class=\"CellWithComment\"><a [routerLink]=\"['/getrecord', patient._id]\" class=\"nav-link\">{{ patient.first_name }}<span class=\"CellComment\">Click to fetch records!</span></a>\n                                        </td> -->\n                                        <td class=\"hide\">{{ patient.last_name }}</td>\n                                        <td class=\"hide\">{{ patient.dob }}</td>\n                                        <td class=\"hide\">{{ patient.address }}</td>\n                                        <td class=\"buttons\"><a (click)=\"singlePatient(patient._id)\" class=\"btn btn-primary\">Get</a>\n                                        <td class=\"buttons\"><a [routerLink]=\"['/edit', patient._id]\" class=\"btn btn-primary\">Edit</a>\n                                        <button (click)=\"deletePatient(patient._id)\"  class=\"btn btn-danger\">Delete</button></td>\n                                    </tr>\n                            </tbody>\n                </table> \n          </form>\n        </div>\n      </div>"
 
 /***/ }),
 
@@ -720,6 +811,15 @@ var IndexComponent = /** @class */ (function () {
             console.log('Deleted');
         });
         window.location.reload();
+    };
+    IndexComponent.prototype.singlePatient = function (id) {
+        var _this = this;
+        this.patientService.getSinglePatient(id).subscribe(function (res) {
+            console.log(res);
+            _this.patients = res;
+            _this.patientService.setData(res);
+            _this.router.navigate(['/getrecord']);
+        });
     };
     IndexComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
@@ -913,6 +1013,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var rxjs_BehaviorSubject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/BehaviorSubject */ "./node_modules/rxjs-compat/_esm5/BehaviorSubject.js");
+
 
 
 
@@ -920,6 +1022,8 @@ var PatientService = /** @class */ (function () {
     function PatientService(http) {
         this.http = http;
         this.uri = '/patient';
+        this.apiData = new rxjs_BehaviorSubject__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
+        this.apiData$ = this.apiData.asObservable();
     }
     PatientService.prototype.addPatient = function (first_name, last_name, dob, address) {
         var obj = {
@@ -935,6 +1039,12 @@ var PatientService = /** @class */ (function () {
         return this
             .http
             .get("" + this.uri);
+    };
+    PatientService.prototype.getSinglePatient = function (id) {
+        return this.http.get(this.uri + "/" + id);
+    };
+    PatientService.prototype.setData = function (data) {
+        this.apiData.next(data);
     };
     PatientService.prototype.editPatient = function (id) {
         return this
@@ -965,6 +1075,75 @@ var PatientService = /** @class */ (function () {
         tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]])
     ], PatientService);
     return PatientService;
+}());
+
+
+
+/***/ }),
+
+/***/ "./src/app/record.service.ts":
+/*!***********************************!*\
+  !*** ./src/app/record.service.ts ***!
+  \***********************************/
+/*! exports provided: RecordService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "RecordService", function() { return RecordService; });
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "./node_modules/tslib/tslib.es6.js");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/fesm5/core.js");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/fesm5/http.js");
+/* harmony import */ var rxjs_BehaviorSubject__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/BehaviorSubject */ "./node_modules/rxjs-compat/_esm5/BehaviorSubject.js");
+
+
+
+
+var RecordService = /** @class */ (function () {
+    function RecordService(http) {
+        this.http = http;
+        this.uri = '/record';
+        this.apiData = new rxjs_BehaviorSubject__WEBPACK_IMPORTED_MODULE_3__["BehaviorSubject"](null);
+        this.apiData$ = this.apiData.asObservable();
+    }
+    RecordService.prototype.addRecord = function (id, newRecord) {
+        var headers = new _angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpHeaders"]({ 'Content-Type': 'application/json' });
+        return this.http.post(this.uri + "/" + id + "/add", newRecord, { headers: headers });
+    };
+    // addRecord(        blood_pressure, heart_rate,respiratory_rate,        blood_oxygen) {
+    //     const obj = {
+    //                 blood_pressure :         blood_pressure,
+    //         heart_rate: heart_rate,
+    //         respiratory_rate:respiratory_rate,
+    //                 blood_oxygen:        blood_oxygen
+    // //     };
+    //     this.http.post(`${this.uri}/add`, obj)
+    //     .subscribe(res => console.log('Done'));
+    // }
+    RecordService.prototype.getRecords = function (id) {
+        return this
+            .http
+            .get(this.uri + "/" + id);
+    };
+    RecordService.prototype.deleteRecord = function (ID) {
+        return this
+            .http
+            .delete(this.uri + "/delete/" + ID);
+    };
+    RecordService.prototype.saveID = function (id) {
+        localStorage.removeItem("id");
+        localStorage.setItem("id", JSON.stringify(id));
+    };
+    RecordService.prototype.setData = function (data) {
+        this.apiData.next(data);
+    };
+    RecordService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
+        Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({
+            providedIn: 'root'
+        }),
+        tslib__WEBPACK_IMPORTED_MODULE_0__["__metadata"]("design:paramtypes", [_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]])
+    ], RecordService);
+    return RecordService;
 }());
 
 
@@ -1032,7 +1211,7 @@ Object(_angular_platform_browser_dynamic__WEBPACK_IMPORTED_MODULE_1__["platformB
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/tirthraj/OneDrive - Centennial College/MAPD-Web Tech/Patient-Clinical-Data-Management/src/main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! /Users/tirthraj/OneDrive - Centennial College/MAPD-Web Tech/final/Patient-Clinical-Data-Management/src/main.ts */"./src/main.ts");
 
 
 /***/ })

@@ -20,11 +20,12 @@
                             </thead>
                             <tbody id="body_color">
                                     <tr *ngFor="let patient of patients">
-                                        <td class="CellWithComment"><a [routerLink]="['/getrecord']" class="nav-link">{{ patient.first_name }}<span class="CellComment">Click to fetch records!</span></a>
-                                        </td>
+                                        <!-- <td class="CellWithComment"><a [routerLink]="['/getrecord', patient._id]" class="nav-link">{{ patient.first_name }}<span class="CellComment">Click to fetch records!</span></a>
+                                        </td> -->
                                         <td class="hide">{{ patient.last_name }}</td>
                                         <td class="hide">{{ patient.dob }}</td>
                                         <td class="hide">{{ patient.address }}</td>
+                                        <td class="buttons"><a (click)="singlePatient(patient._id)" class="btn btn-primary">Get</a>
                                         <td class="buttons"><a [routerLink]="['/edit', patient._id]" class="btn btn-primary">Edit</a>
                                         <button (click)="deletePatient(patient._id)"  class="btn btn-danger">Delete</button></td>
                                     </tr>
